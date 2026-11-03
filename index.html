@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor d'Incidències Informàtiques</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="main-header">
+      <h1><i class="fa-solid fa-wrench"></i> Gestor d'Incidències Informàtiques</h1>
+      <p>Sistema de gestió d'incidències per al departament d'IT</p>
+    </header>
+
+    <!-- KPI Cards -->
+    <section class="kpi-container">
+      <div class="kpi-card">
+        <span id="total" class="kpi-number"></span>
+        <span class="kpi-label">Total Incidències</span>
+      </div>
+      <div class="kpi-card">
+        <span id="oberta" class="kpi-number"></span>
+        <span class="kpi-label">Obertes</span>
+      </div>
+      <div class="kpi-card">
+        <span id="proces" class="kpi-number"></span>
+        <span class="kpi-label">En Procés</span>
+      </div>
+      <div class="kpi-card">
+        <span id="tancades" class="kpi-number"></span>
+        <span class="kpi-label">Tancades</span>
+      </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filter-section">
+      <div class="filter-group">
+        <label for="estat">Estat</label>
+        <select id="estat">
+          <option value="tots">Tots</option>
+          <option value="obert">Obert</option>
+          <option value="en-proces">En Procés</option>
+          <option value="tancat">Tancat</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="prioritat">Prioritat</label>
+        <select id="prioritat">
+          <option value="totes">Totes</option>
+          <option value="alta">Alta</option>
+          <option value="mitjana">Mitjana</option>
+          <option value="baixa">Baixa</option>
+        </select>
+      </div>
+
+      <button class="btn-clear">Netejar Filtres</button>
+    </section>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button id="incidencia" class="btn-add"><i class="fa-solid fa-plus"></i> ➕ Nova Incidència</button>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-responsive">
+      <table class="incidents-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Títol</th>
+            <th>Descripció</th>
+            <th>Estat</th>
+            <th>Prioritat</th>
+            <th>Assignat</th>
+            <th>Data</th>
+            <th>Accions</th>
+          </tr>
+        </thead>
+        <tbody id="tabla">
+        </tbody>
+      </table>
+    </div>
+    <div id="modal-incidencia" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Nova Incidència</h2>
+        <button type="button" class="close-btn" id="btn-cerrar" aria-label="Tancar">❌</button>
+      </div>
+      <form id="form-incidencia">
+        <div class="form-group">
+          <label for="titulo">Títol</label>
+          <input type="text" id="titulo" placeholder="Títol de la incidència" required>
+        </div>
+
+
+        <div class="form-group">
+          <label for="descripcion">Descripció</label>
+          <textarea id="descripcion" placeholder="Descripció"></textarea>
+        </div>
+
+
+        <div class="form-group">
+          <label for="estat-form">Estat</label>
+          <select id="estat-form">
+            <option value="obert">Obert</option>
+            <option value="en-proces">En Procés</option>
+            <option value="tancat">Tancat</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label for="prioritat-form">Prioritat</label>
+          <select id="prioritat-form">
+            <option value="alta">Alta</option>
+            <option value="mitjana">Mitjana</option>
+            <option value="baixa">Baixa</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label for="asignado">Assignat a</label>
+          <input type="text" id="asignado" placeholder="Nom de la persona">
+        </div>
+
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="btn-cancelar">Tancar</button>
+          <button type="submit" class="btn-save" id="btn-save">Desar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  </div>
+  <script src="index.js"></script>
+
+</body>
+</html>
