@@ -1,4 +1,4 @@
-const incidencies = [
+let incidencies = [
   {
     id: 1,
     titol: "Ordinador no arrenca",
@@ -48,19 +48,18 @@ const incidencies = [
 
 const tabla = document.querySelector("#tabla");
 
-function renderizar() {
-
+function renderizar(lista = incidencies) {
   tabla.innerHTML = "";
-  for (let i = 0; i < incidencies.length; i++) {
+  for (let i = 0; i < lista.length; i++) {
     tabla.innerHTML += `
       <tr>
-        <td>${incidencies[i].id}</td>
-        <td>${incidencies[i].titol}</td>
-        <td>${incidencies[i].descripcio}</td>
-        <td>${incidencies[i].estat}</td>
-        <td>${incidencies[i].prioritat}</td>
-        <td>${incidencies[i].assignat}</td>
-        <td>${incidencies[i].dataCreacio}</td>
+        <td>${lista[i].id}</td>
+        <td>${lista[i].titol}</td>
+        <td>${lista[i].descripcio}</td>
+        <td>${lista[i].estat}</td>
+        <td>${lista[i].prioritat}</td>
+        <td>${lista[i].assignat}</td>
+        <td>${lista[i].dataCreacio}</td>
       </tr>
     `;
   }
@@ -68,61 +67,52 @@ function renderizar() {
 renderizar();
 
 const total = document.querySelector("#total");
-for(let i = 0; i< incidencies.length; i++){
-    numeroid = incidencies[i].id;  
-
+let numeroid = 0;
+for (let i = 0; i < incidencies.length; i++) {
+  numeroid = incidencies[i].id;
 }
 
 total.innerHTML = `
     <span id="total" class="kpi-number">${numeroid}</span>
-`
-
+`;
 
 const oberta = document.querySelector("#oberta");
-
 let obert = 0;
 for (let i = 0; i < incidencies.length; i++) {
-    if (incidencies[i].estat === "obert") {
-        obert++;
-    }
+  if (incidencies[i].estat === "obert") {
+    obert++;
+  }
 }
 
 if (oberta !== null) {
   oberta.innerHTML = `<span class="kpi-number" id="oberta">${obert}</span>`;
 }
 
-
-
 const proces = document.querySelector("#proces");
 let process = 0;
 
 for (let i = 0; i < incidencies.length; i++) {
-    if (incidencies[i].estat === "proces") {
-        process++;
-    }
+  if (incidencies[i].estat === "proces") {
+    process++;
+  }
 }
 
 if (proces !== null) {
-    proces.innerHTML = `<span id="proces" class="kpi-number">${process}</span>`;
+  proces.innerHTML = `<span id="proces" class="kpi-number">${process}</span>`;
 }
-
-
 
 const tancades = document.querySelector("#tancades");
 let tancadess = 0;
 
 for (let i = 0; i < incidencies.length; i++) {
-    if (incidencies[i].estat === "tancat") {
-        tancadess++;
-    }
+  if (incidencies[i].estat === "tancat") {
+    tancadess++;
+  }
 }
 
 if (tancades !== null) {
-        tancades.innerHTML = `<span id="tancades" class="kpi-number">${tancadess}</span>`;
+  tancades.innerHTML = `<span id="tancades" class="kpi-number">${tancadess}</span>`;
 }
-
-
-
 
 const modal = document.querySelector("#modal-incidencia");
 const form = document.querySelector("#form-incidencia");
@@ -136,13 +126,10 @@ const cerrarModal = () => modal.classList.remove("modal_mostrar");
 document.querySelector("#btn-cerrar").onclick = cerrarModal;
 document.querySelector("#btn-cancelar").onclick = cerrarModal;
 
-
 form.onsubmit = function (e) {
   e.preventDefault();
 
-
   const hoy = new Date().toLocaleDateString('es-ES');
-
 
   const nuevaIncidencia = {
     id: incidencies.length > 0 ? incidencies[incidencies.length - 1].id + 1 : 1,
@@ -154,46 +141,46 @@ form.onsubmit = function (e) {
     dataCreacio: hoy
   };
 
-incidencies.push(nuevaIncidencia);
-    renderizar();
-    form.reset();
+  incidencies.push(nuevaIncidencia);
+  renderizar();
+  form.reset();
 
-    const localIncidencias = JSON.stringify(incidencies);
-    localStorage.getItem("local");
-    localStorage.setItem("misIncidencias", localIncidencias)
-
+  const localIncidencias = JSON.stringify(incidencies);
+  localStorage.setItem("misIncidencias", localIncidencias);
 };
 
-for(let i=0; i<incidencies.length; i++){
-    if(incidencies[i].estat = "obert"){
-        
-    }
-}
 
-// --- CÓDIGO NUEVO PARA FILTRAR ---
 const selectEstat = document.querySelector("#estat");
 const selectPrioritat = document.querySelector("#prioritat");
+const btnClear = document.querySelector(".btn-clear");
 
-function aplicarFiltro() {
-  // Tomamos solo las filas creadas dentro de tbody
-  const filas = document.querySelectorAll("#tabla tr");
-
-  for (let i = 0; i < incidencies.length; i++) {
-    // Normalizamos 'en-proces' a 'proces' si hace falta
-    const estatSeleccionat = selectEstat.value.replace("en-", "");
-    
-    const coincideEstat = selectEstat.value === "tots" || incidencies[i].estat === estatSeleccionat;
-    const coincidePrioritat = selectPrioritat.value === "totes" || incidencies[i].prioritat === selectPrioritat.value;
-
-    if (filas[i]) {
-      if (coincideEstat && coincidePrioritat) {
-        filas[i].style.display = "";
-      } else {
-        filas[i].style.display = "none";
-      }
+function aplicarFiltres() {
+  const llistaFiltrada = incidencies.filter(function (incidencia) {
+    // Si selecciona "en-proces", comprueba si el dato es "proces" O "en-proces"
+    let coincideEstat = false;
+    if (selectEstat.value === "tots") {
+      coincideEstat = true;
+    } else if (selectEstat.value === "en-proces" || selectEstat.value === "proces") {
+      coincideEstat = (incidencia.estat === "proces" || incidencia.estat === "en-proces");
+    } else {
+      coincideEstat = (incidencia.estat === selectEstat.value);
     }
-  }
+
+    const coincidePrioritat = selectPrioritat.value === "totes" || incidencia.prioritat === selectPrioritat.value;
+
+    return coincideEstat && coincidePrioritat;
+  });
+
+  renderizar(llistaFiltrada);
 }
 
-selectEstat.onchange = aplicarFiltro;
-selectPrioritat.onchange = aplicarFiltro;
+selectEstat.onchange = aplicarFiltres;
+selectPrioritat.onchange = aplicarFiltres;
+
+if (btnClear) {
+  btnClear.onclick = function () {
+    selectEstat.value = "tots";
+    selectPrioritat.value = "totes";
+    renderizar(incidencies);
+  };
+}
