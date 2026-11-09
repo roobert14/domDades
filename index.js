@@ -1,4 +1,6 @@
-let incidencies = [
+// 1. Cargar desde localStorage o usar el listado por defecto
+const guardades = localStorage.getItem("misIncidencias");
+let incidencies = guardades ? JSON.parse(guardades) : [
   {
     id: 1,
     titol: "Ordinador no arrenca",
@@ -48,6 +50,7 @@ let incidencies = [
 
 const tabla = document.querySelector("#tabla");
 
+// 2. Función para renderizar la tabla
 function renderizar(lista = incidencies) {
   tabla.innerHTML = "";
   for (let i = 0; i < lista.length; i++) {
@@ -66,54 +69,35 @@ function renderizar(lista = incidencies) {
 }
 renderizar();
 
-const total = document.querySelector("#total");
-let numeroid = 0;
-for (let i = 0; i < incidencies.length; i++) {
-  numeroid = incidencies[i].id;
-}
+// 3. Función para actualizar contadores KPI
+function actualizarKPIs() {
+  const total = document.querySelector("#total");
+  const oberta = document.querySelector("#oberta");
+  const proces = document.querySelector("#proces");
+  const tancades = document.querySelector("#tancades");
 
-total.innerHTML = `
-    <span id="total" class="kpi-number">${numeroid}</span>
-`;
+  if (total) {
+    total.innerHTML = `<span id="total" class="kpi-number">${incidencies.length}</span>`;
+  }
 
-const oberta = document.querySelector("#oberta");
-let obert = 0;
-for (let i = 0; i < incidencies.length; i++) {
-  if (incidencies[i].estat === "obert") {
-    obert++;
+  const obert = incidencies.filter(i => i.estat === "obert").length;
+  if (oberta) {
+    oberta.innerHTML = `<span class="kpi-number" id="oberta">${obert}</span>`;
+  }
+
+  const process = incidencies.filter(i => i.estat === "proces" || i.estat === "en-proces").length;
+  if (proces) {
+    proces.innerHTML = `<span id="proces" class="kpi-number">${process}</span>`;
+  }
+
+  const tancadess = incidencies.filter(i => i.estat === "tancat").length;
+  if (tancades) {
+    tancades.innerHTML = `<span id="tancades" class="kpi-number">${tancadess}</span>`;
   }
 }
+actualizarKPIs();
 
-if (oberta !== null) {
-  oberta.innerHTML = `<span class="kpi-number" id="oberta">${obert}</span>`;
-}
-
-const proces = document.querySelector("#proces");
-let process = 0;
-
-for (let i = 0; i < incidencies.length; i++) {
-  if (incidencies[i].estat === "proces") {
-    process++;
-  }
-}
-
-if (proces !== null) {
-  proces.innerHTML = `<span id="proces" class="kpi-number">${process}</span>`;
-}
-
-const tancades = document.querySelector("#tancades");
-let tancadess = 0;
-
-for (let i = 0; i < incidencies.length; i++) {
-  if (incidencies[i].estat === "tancat") {
-    tancadess++;
-  }
-}
-
-if (tancades !== null) {
-  tancades.innerHTML = `<span id="tancades" class="kpi-number">${tancadess}</span>`;
-}
-
+// 4. Gestión del Modal
 const modal = document.querySelector("#modal-incidencia");
 const form = document.querySelector("#form-incidencia");
 
@@ -126,6 +110,7 @@ const cerrarModal = () => modal.classList.remove("modal_mostrar");
 document.querySelector("#btn-cerrar").onclick = cerrarModal;
 document.querySelector("#btn-cancelar").onclick = cerrarModal;
 
+// 5. Envío del formulario (Guardar en localStorage y actualizar UI)
 form.onsubmit = function (e) {
   e.preventDefault();
 
@@ -142,21 +127,25 @@ form.onsubmit = function (e) {
   };
 
   incidencies.push(nuevaIncidencia);
-  renderizar();
-  form.reset();
+  
+  // Guardar datos actualizados en localStorage
+  localStorage.setItem("misIncidencias", JSON.stringify(incidencies));
 
-  const localIncidencias = JSON.stringify(incidencies);
-  localStorage.setItem("misIncidencias", localIncidencias);
+  // Actualizar vista y contadores
+  renderizar();
+  actualizarKPIs();
+
+  form.reset();
+  cerrarModal();
 };
 
-
+// 6. Filtros
 const selectEstat = document.querySelector("#estat");
 const selectPrioritat = document.querySelector("#prioritat");
 const btnClear = document.querySelector(".btn-clear");
 
 function aplicarFiltres() {
   const llistaFiltrada = incidencies.filter(function (incidencia) {
-    // Si selecciona "en-proces", comprueba si el dato es "proces" O "en-proces"
     let coincideEstat = false;
     if (selectEstat.value === "tots") {
       coincideEstat = true;
